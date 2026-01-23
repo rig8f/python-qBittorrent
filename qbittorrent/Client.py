@@ -18,7 +18,7 @@ class Client:
         username: str,
         password: str,
         verify: bool = True,
-        timeout: bool = None,
+        timeout: Optional[bool] = None,
         max_attempts_on_403: int = 3,
     ):
         """
@@ -195,12 +195,12 @@ class Client:
             data={"username": self.username, "password": self.password},
             verify=self._verify,
         )
-        if login.text == "Ok.":
+        if login.status_code == 200 or login.text == "Ok.":
             return
 
         raise WrongCredentials
 
-    def logout(self) -> Optional[requests.Response]:
+    def logout(self):
         """
         Logout the current session.
         """
@@ -498,13 +498,13 @@ class Client:
 
         :param infohash: INFO HASH of torrent.
         """
-        return self._post("torrents/pause", data={"hashes": infohash.lower()})
+        return self._post("torrents/stop", data={"hashes": infohash.lower()})
 
     def pause_all(self):
         """
         Pause all torrents.
         """
-        return self._post("torrents/pause", data={"hashes": "all"})
+        return self._post("torrents/stop", data={"hashes": "all"})
 
     def pause_multiple(self, infohash_list):
         """
@@ -513,7 +513,7 @@ class Client:
         :param infohash_list: Single or list() of infohashes.
         """
         data = self._process_infohash_list(infohash_list)
-        return self._post("torrents/pause", data=data)
+        return self._post("torrents/stop", data=data)
 
     def set_category(self, infohash_list, category):
         """
@@ -553,13 +553,13 @@ class Client:
 
         :param infohash: INFO HASH of torrent.
         """
-        return self._post("torrents/resume", data={"hashes": infohash.lower()})
+        return self._post("torrents/start", data={"hashes": infohash.lower()})
 
     def resume_all(self):
         """
         Resume all torrents.
         """
-        return self._post("torrents/resume", data={"hashes": "all"})
+        return self._post("torrents/start", data={"hashes": "all"})
 
     def resume_multiple(self, infohash_list):
         """
@@ -568,7 +568,7 @@ class Client:
         :param infohash_list: Single or list() of infohashes.
         """
         data = self._process_infohash_list(infohash_list)
-        return self._post("torrents/resume", data=data)
+        return self._post("torrents/start", data=data)
 
     def delete(self, infohash_list):
         """
