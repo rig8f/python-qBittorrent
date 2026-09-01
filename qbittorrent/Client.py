@@ -195,7 +195,7 @@ class Client:
             data={"username": self.username, "password": self.password},
             verify=self._verify,
         )
-        if login.status_code == 200 or login.text == "Ok.":
+        if login.status_code in (200, 204) or login.text == "Ok.":
             return
 
         raise WrongCredentials
